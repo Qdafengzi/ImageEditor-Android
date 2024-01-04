@@ -24,8 +24,7 @@ import com.xinlan.imageeditlibrary.editimage.view.imagezoom.utils.IDisposable;
  * @author alessandro
  * 
  */
-public abstract class ImageViewTouchBase extends ImageView implements
-		IDisposable {
+public abstract class ImageViewTouchBase extends ImageView implements IDisposable {
 
 	public interface OnDrawableChangeListener {
 

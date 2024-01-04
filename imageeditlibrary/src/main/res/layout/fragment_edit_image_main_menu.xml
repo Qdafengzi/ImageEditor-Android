@@ -10,16 +10,6 @@
         android:layout_height="fill_parent"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/btn_paint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/edit"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
 
         <TextView
             android:id="@+id/btn_stickers"
@@ -32,38 +22,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/image_edit_text_size"/>
 
-        <TextView
-            android:id="@+id/btn_filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/filter"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
 
-        <TextView
-            android:id="@+id/btn_crop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/crop"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
-
-        <TextView
-            android:id="@+id/btn_rotate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/rotate"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
 
         <TextView
             android:id="@+id/btn_text"
@@ -76,16 +35,6 @@
             android:textColor="@color/white"
             android:textSize="@dimen/image_edit_text_size"/>
 
-        <TextView
-            android:id="@+id/btn_beauty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/beauty"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
 
     </LinearLayout>
 </HorizontalScrollView>

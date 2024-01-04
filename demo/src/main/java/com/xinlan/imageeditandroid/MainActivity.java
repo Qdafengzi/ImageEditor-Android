@@ -71,16 +71,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.take_photo:
-                takePhotoClick();
-                break;
-            case R.id.edit_image:
-                editImageClick();
-                break;
-            case R.id.select_ablum:
-                selectFromAblum();
-                break;
+        int id = v.getId();
+        if (id == R.id.take_photo) {
+            takePhotoClick();
+        } else if (id == R.id.edit_image) {
+            editImageClick();
+        } else if (id == R.id.select_ablum) {
+            selectFromAblum();
         }//end switch
     }
 
@@ -167,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSON_SORAGE
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
