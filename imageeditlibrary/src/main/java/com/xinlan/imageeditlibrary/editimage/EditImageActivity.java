@@ -23,8 +23,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
-import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
-import com.xinlan.imageeditlibrary.editimage.fragment.StickerFragment;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
 import com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView;
 import com.xinlan.imageeditlibrary.editimage.view.AddTextItemView;
@@ -80,8 +78,8 @@ public class EditImageActivity extends BaseActivity {
     //    public CustomViewPager bottomGallery;// 底部gallery
 //    private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
 //    private MainMenuFragment mMainMenuFragment;// Menu
-    public StickerFragment mStickerFragment = StickerFragment.newInstance();// 贴图Fragment
-    public AddTextFragment mAddTextFragment = AddTextFragment.newInstance();//图片添加文字
+//    public StickerFragment mStickerFragment = StickerFragment.newInstance();// 贴图Fragment
+//    public AddTextFragment mAddTextFragment = AddTextFragment.newInstance();//图片添加文字
     private SaveImageTask mSaveImageTask;
 
     private RedoUndoController mRedoUndoController;//撤销操作
@@ -203,9 +201,9 @@ public class EditImageActivity extends BaseActivity {
      * 关闭输入法
      */
     private void closeInputMethod() {
-        if (mAddTextFragment.isAdded()) {
-            mAddTextFragment.hideInput();
-        }
+//        if (mAddTextFragment.isAdded()) {
+//            mAddTextFragment.hideInput();
+//        }
     }
 
     /**
@@ -238,10 +236,10 @@ public class EditImageActivity extends BaseActivity {
     public void onBackPressed() {
         switch (mode) {
             case MODE_STICKERS:
-                mStickerFragment.backToMain();
+//                mStickerFragment.backToMain();
                 return;
             case MODE_TEXT:
-                mAddTextFragment.backToMain();
+//                mAddTextFragment.backToMain();
                 return;
         }// end switch
 
@@ -275,10 +273,10 @@ public class EditImageActivity extends BaseActivity {
         public void onClick(View v) {
             switch (mode) {
                 case MODE_STICKERS:
-                    mStickerFragment.applyStickers();// 保存贴图
+//                    mStickerFragment.applyStickers();// 保存贴图
                     break;
                 case MODE_TEXT://文字贴图 图片保存
-                    mAddTextFragment.applyTextImage();
+//                    mAddTextFragment.applyTextImage();
                     break;
                 default:
                     break;

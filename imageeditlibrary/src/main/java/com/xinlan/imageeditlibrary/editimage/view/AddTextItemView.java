@@ -304,15 +304,18 @@ public class AddTextItemView extends View {
                     invalidate();
                 }// end if
 
-                if (mCurrentMode == DELETE_MODE) {// 删除选定贴图
-                    mCurrentMode = IDLE_MODE;// 返回空闲状态
+                if (mCurrentMode == DELETE_MODE) {
+                    // 删除选定贴图
+                    mCurrentMode = IDLE_MODE;
+                    // 返回空闲状态
                     clearTextContent();
                     invalidate();
                 }// end if
                 break;
             case MotionEvent.ACTION_MOVE:
                 ret = true;
-                if (mCurrentMode == MOVE_MODE) {// 移动贴图
+                if (mCurrentMode == MOVE_MODE) {
+                    // 移动贴图
                     float dx = x - last_x;
                     float dy = y - last_y;
                     layout_x += dx;
@@ -320,14 +323,16 @@ public class AddTextItemView extends View {
                     invalidate();
                     last_x = x;
                     last_y = y;
-                } else if (mCurrentMode == SCALE_MODE) {// 旋转 缩放文字操作
+                } else if (mCurrentMode == SCALE_MODE) {
+                    // 旋转 缩放文字操作
                     float dx = x - last_x;
                     float dy = y - last_y;
                     updateScale(dx, dy);
                     invalidate();
                     last_x = x;
                     last_y = y;
-                } else if (mCurrentMode == ROTATE_MODE) {// 旋转 缩放文字操作
+                } else if (mCurrentMode == ROTATE_MODE) {
+                    // 旋转 缩放文字操作
                     float dx = x - last_x;
                     float dy = y - last_y;
                     updateRotate(dx, dy);
@@ -357,7 +362,7 @@ public class AddTextItemView extends View {
         //mRotateAngle
         mPoint.set((int) x, (int) y);
         //旋转点击点
-        RectUtil.rotatePoint(mPoint, mHelpBoxRect.centerX(), mHelpBoxRect.centerY(), -mRotateAngle);
+        RectUtil.rotatePoint(mPoint, mHelpBoxRect.centerX(), mHelpBoxRect.centerY(), - mRotateAngle);
         return mHelpBoxRect.contains(mPoint.x, mPoint.y);
     }
 
@@ -465,16 +470,6 @@ public class AddTextItemView extends View {
 
         float srcLen = (float) Math.sqrt(xa * xa + ya * ya);
         float curLen = (float) Math.sqrt(xb * xb + yb * yb);
-
-//        float scale = curLen / srcLen;// 计算缩放比
-
-//        mScale *= scale;
-//        float newWidth = mHelpBoxRect.width() * mScale;
-//
-//        if (newWidth < 70) {
-//            mScale /= scale;
-//            return;
-//        }
 
         double cos = (xa * xb + ya * yb) / (srcLen * curLen);
         if (cos > 1 || cos < -1)
