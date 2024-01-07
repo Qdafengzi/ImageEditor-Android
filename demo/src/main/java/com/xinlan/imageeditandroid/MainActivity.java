@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.DisplayMetrics;
@@ -20,7 +19,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.xinlan.imageeditlibrary.editimage.EditImageFragment;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
 import com.xinlan.imageeditlibrary.picchooser.SelectPictureActivity;
 
@@ -131,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void editImageClick() {
         File outputFile = FileUtils.genEditFile();
-        EditImageActivity.start(this,path,outputFile.getAbsolutePath(),ACTION_REQUEST_EDITIMAGE);
+        EditImageFragment.start(this,path,outputFile.getAbsolutePath(),ACTION_REQUEST_EDITIMAGE);
     }
 
     /**
@@ -212,13 +211,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleEditorImage(Intent data) {
-        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_OUTPUT);
-        boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
+        String newFilePath = data.getStringExtra(EditImageFragment.EXTRA_OUTPUT);
+        boolean isImageEdit = data.getBooleanExtra(EditImageFragment.IMAGE_IS_EDIT, false);
 
         if (isImageEdit){
             Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
         }else{//未编辑  还是用原来的图片
-            newFilePath = data.getStringExtra(EditImageActivity.FILE_PATH);;
+            newFilePath = data.getStringExtra(EditImageFragment.FILE_PATH);;
         }
         //System.out.println("newFilePath---->" + newFilePath);
         //File file = new File(newFilePath);

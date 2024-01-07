@@ -1,7 +1,6 @@
 package com.xinlan.imageeditlibrary.editimage;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -11,18 +10,25 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
-import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
+import com.xinlan.imageeditlibrary.databinding.ActivityImageEditBinding;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
 import com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView;
 import com.xinlan.imageeditlibrary.editimage.view.AddTextItemView;
@@ -43,7 +49,7 @@ import java.io.InputStream;
  * 包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
  * add new modules
  */
-public class EditImageActivity extends BaseActivity {
+public class EditImageFragment extends Fragment {
     public static final String FILE_PATH = "file_path";
     public static final String EXTRA_OUTPUT = "extra_output";
     public static final String SAVE_FILE_PATH = "save_file_path";
@@ -63,23 +69,18 @@ public class EditImageActivity extends BaseActivity {
     protected int mOpTimes = 0;
     protected boolean isBeenSaved = false;
 
-    private EditImageActivity mContext;
+    private EditImageFragment mContext;
     private Bitmap mainBitmap;// 底层显示Bitmap
     public ImageViewTouch mainImage;
-    private View backBtn;
+//    private View backBtn;
 
-    public ViewFlipper bannerFlipper;
-    private View applyBtn;// 应用按钮
-    private View saveBtn;// 保存按钮
+//    public ViewFlipper bannerFlipper;
+//    private View applyBtn;// 应用按钮
+//    private View saveBtn;// 保存按钮
 
-    public AddImageGroupView mAddImageGroupView;// 贴图层View
-    public AddTextItemView mAddTextItemView;//文本贴图显示View
+//    public AddImageGroupView mAddImageGroupView;// 贴图层View
+//    public AddTextItemView mAddTextItemView;//文本贴图显示View
 
-    //    public CustomViewPager bottomGallery;// 底部gallery
-//    private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
-//    private MainMenuFragment mMainMenuFragment;// Menu
-//    public StickerFragment mStickerFragment = StickerFragment.newInstance();// 贴图Fragment
-//    public AddTextFragment mAddTextFragment = AddTextFragment.newInstance();//图片添加文字
     private SaveImageTask mSaveImageTask;
 
     private RedoUndoController mRedoUndoController;//撤销操作
@@ -96,23 +97,38 @@ public class EditImageActivity extends BaseActivity {
             return;
         }
 
-        Intent it = new Intent(context, EditImageActivity.class);
-        it.putExtra(EditImageActivity.FILE_PATH, editImagePath);
-        it.putExtra(EditImageActivity.EXTRA_OUTPUT, outputPath);
+        Intent it = new Intent(context, EditImageFragment.class);
+        it.putExtra(EditImageFragment.FILE_PATH, editImagePath);
+        it.putExtra(EditImageFragment.EXTRA_OUTPUT, outputPath);
         context.startActivityForResult(it, requestCode);
     }
 
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        //checkInitImageLoader();
+//        setContentView(R.layout.activity_image_edit);
+//
+//    }
+
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        checkInitImageLoader();
-        setContentView(R.layout.activity_image_edit);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_image_edit, container, false);
+    }
+
+    ActivityImageEditBinding mBinding ;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mBinding =  DataBindingUtil.bind(view);
         initView();
         getData();
     }
 
     private void getData() {
-        saveFilePath = new File(getCacheDir().getAbsolutePath(), "tietu" + System.currentTimeMillis() + ".png").getAbsolutePath();
+        saveFilePath = new File(getContext().getCacheDir().getAbsolutePath(), "tietu" + System.currentTimeMillis() + ".png").getAbsolutePath();
         Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_editor);
         changeMainBitmap(bitmap, false);
     }
@@ -123,52 +139,56 @@ public class EditImageActivity extends BaseActivity {
 //        imageWidth = metrics.widthPixels / 2;
 //        imageHeight = metrics.heightPixels / 2;
 
-        bannerFlipper = (ViewFlipper) findViewById(R.id.banner_flipper);
-        bannerFlipper.setInAnimation(this, R.anim.in_bottom_to_top);
-        bannerFlipper.setOutAnimation(this, R.anim.out_bottom_to_top);
-        applyBtn = findViewById(R.id.apply);
-        applyBtn.setOnClickListener(new ApplyBtnClick());
-        saveBtn = findViewById(R.id.save_btn);
-        saveBtn.setOnClickListener(new SaveBtnClick());
+//        bannerFlipper = (ViewFlipper) findViewById(R.id.banner_flipper);
+        mBinding.bannerFlipper.setInAnimation(getContext(), R.anim.in_bottom_to_top);
+        mBinding.bannerFlipper.setOutAnimation(getContext(), R.anim.out_bottom_to_top);
 
-        mainImage = (ImageViewTouch) findViewById(R.id.main_image);
-        backBtn = findViewById(R.id.back_btn);// 退出按钮
-        backBtn.setOnClickListener(new OnClickListener() {
+//        applyBtn = findViewById(R.id.apply);
+        mBinding.apply.setOnClickListener(new ApplyBtnClick());
+//        saveBtn = findViewById(R.id.save_btn);
+        mBinding.saveBtn.setOnClickListener(new SaveBtnClick());
+
+//        mainImage = (ImageViewTouch) findViewById(R.id.main_image);
+//        mBinding.backBtn = findViewById(R.id.back_btn);// 退出按钮
+        mBinding.backBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                //onBackPressed();
+
             }
         });
 
-        mAddImageGroupView = (AddImageGroupView) findViewById(R.id.sticker_panel);
+//        mAddImageGroupView = (AddImageGroupView) findViewById(R.id.sticker_panel);
         mainImage.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                mAddImageGroupView.setRootImageRect(mainImage.getRootImageRect(), mainImage.getWidth(), mainImage.getHeight());
+                mBinding.stickerPanel.setRootImageRect(mainImage.getRootImageRect(), mainImage.getWidth(), mainImage.getHeight());
             }
         });
 
 
-        mAddTextItemView = (AddTextItemView) findViewById(R.id.text_sticker_panel);
+//        mAddTextItemView = (AddTextItemView) findViewById(R.id.text_sticker_panel);
 
-        Button buttonImage = findViewById(R.id.btn_image);
-        Button buttonText = findViewById(R.id.btn_text);
-        buttonImage.setOnClickListener(new OnClickListener() {
+//        Button buttonImage = findViewById(R.id.btn_image);
+//        Button buttonText = findViewById(R.id.btn_text);
+        mBinding.btnImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAddImageGroupView.setVisibility(View.VISIBLE);
-                mAddTextItemView.setVisibility(View.GONE);
+
+                mBinding.stickerPanel.setVisibility(View.VISIBLE);
+                mBinding.textStickerPanel.setVisibility(View.GONE);
                 Bitmap bitmap =  getImageFromAssetsFile("stickers/type1/1.png");
-                mAddImageGroupView.addBitImage(bitmap);
+                mBinding.stickerPanel.addBitImage(bitmap);
             }
         });
 
-        buttonText.setOnClickListener(new OnClickListener() {
+        mBinding.btnText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAddImageGroupView.setVisibility(View.GONE);
-                mAddTextItemView.setVisibility(View.VISIBLE);
-                mAddTextItemView.setText("哈哈哈哈/ndjksahdslls\ndsakjio3qikj");
+                mBinding.stickerPanel.setVisibility(View.GONE);
+                mBinding.textStickerPanel.setVisibility(View.VISIBLE);
+//                mAddTextItemView.setText("哈哈哈哈");
+                mBinding.textStickerPanel.setText("哈哈哈哈\n嘻嘻嘻嘻嘻嘻\n啦啦啦啦啦啦");
             }
         });
 
@@ -181,7 +201,7 @@ public class EditImageActivity extends BaseActivity {
             }
         });
 
-        mRedoUndoController = new RedoUndoController(this, findViewById(R.id.redo_uodo_panel));
+        mRedoUndoController = new RedoUndoController(this, mBinding.redoUodoPanel);
     }
 
     private Bitmap getImageFromAssetsFile(String fileName) {
@@ -206,62 +226,36 @@ public class EditImageActivity extends BaseActivity {
 //        }
     }
 
-    /**
-     * @author panyi
-     */
-//    private final class BottomGalleryAdapter extends FragmentPagerAdapter {
-//        public BottomGalleryAdapter(FragmentManager fm) {
-//            super(fm);
+//    @Override
+//    public void onBackPressed() {
+//        switch (mode) {
+//            case MODE_STICKERS:
+////                mStickerFragment.backToMain();
+//                return;
+//            case MODE_TEXT:
+////                mAddTextFragment.backToMain();
+//                return;
 //        }
 //
-//        @Override
-//        public Fragment getItem(int index) {
-//            switch (index) {
-//                case MainMenuFragment.INDEX:// 主菜单
-//                    return mMainMenuFragment;
-//                case StickerFragment.INDEX:// 贴图
-//                    return mStickerFragment;
-//                case AddTextFragment.INDEX://添加文字
-//                    return mAddTextFragment;
-//            }//end switch
-//            return MainMenuFragment.newInstance();
-//        }
+//        if (canAutoExit()) {
+//            onSaveTaskDone();
+//        } else {//图片还未被保存    弹出提示框确认
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+//            alertDialogBuilder.setMessage(R.string.exit_without_save)
+//                    .setCancelable(false).setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            mContext.finish();
+//                        }
+//                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            dialog.cancel();
+//                        }
+//                    });
 //
-//        @Override
-//        public int getCount() {
-//            return 8;
+//            AlertDialog alertDialog = alertDialogBuilder.create();
+//            alertDialog.show();
 //        }
-//    }// end inner class
-    @Override
-    public void onBackPressed() {
-        switch (mode) {
-            case MODE_STICKERS:
-//                mStickerFragment.backToMain();
-                return;
-            case MODE_TEXT:
-//                mAddTextFragment.backToMain();
-                return;
-        }// end switch
-
-        if (canAutoExit()) {
-            onSaveTaskDone();
-        } else {//图片还未被保存    弹出提示框确认
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage(R.string.exit_without_save)
-                    .setCancelable(false).setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            mContext.finish();
-                        }
-                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-        }
-    }
+//    }
 
     /**
      * 应用按钮点击
@@ -331,10 +325,10 @@ public class EditImageActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         if (mSaveImageTask != null) {
             mSaveImageTask.cancel(true);
         }
@@ -343,6 +337,7 @@ public class EditImageActivity extends BaseActivity {
             mRedoUndoController.onDestroy();
         }
     }
+
 
     public void increaseOpTimes() {
         mOpTimes++;
@@ -374,7 +369,7 @@ public class EditImageActivity extends BaseActivity {
      * 完成后退出
      */
     private final class SaveImageTask extends AsyncTask<Bitmap, Void, Boolean> {
-        private Dialog dialog;
+//        private Dialog dialog;
 
         @Override
         protected Boolean doInBackground(Bitmap... params) {
@@ -387,32 +382,32 @@ public class EditImageActivity extends BaseActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            dialog.dismiss();
+//            dialog.dismiss();
         }
 
         @Override
         protected void onCancelled(Boolean result) {
             super.onCancelled(result);
-            dialog.dismiss();
+//            dialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = EditImageActivity.getLoadingDialog(mContext, R.string.saving_image, false);
-            dialog.show();
+//            dialog = EditImageActivity.getLoadingDialog(mContext, R.string.saving_image, false);
+//            dialog.show();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            dialog.dismiss();
+//            dialog.dismiss();
 
             if (result) {
                 resetOpTimes();
                 onSaveTaskDone();
             } else {
-                Toast.makeText(mContext, R.string.save_error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.save_error, Toast.LENGTH_SHORT).show();
             }
         }
     }//end inner class
@@ -421,4 +416,4 @@ public class EditImageActivity extends BaseActivity {
         return mainBitmap;
     }
 
-}// end class
+}

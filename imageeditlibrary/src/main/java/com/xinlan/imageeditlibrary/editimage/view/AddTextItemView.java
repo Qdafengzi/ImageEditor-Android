@@ -16,12 +16,16 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import androidx.annotation.Dimension;
 import androidx.core.content.ContextCompat;
 
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.utils.ListUtil;
 import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,8 +144,13 @@ public class AddTextItemView extends View {
         mHelpPaint.setStrokeWidth(4);
     }
 
+    TextView example = new TextView(getContext());
+
     public void setText(String text) {
         this.mText = text;
+        example.setText(text);
+        example.setTextSize(TEXT_SIZE_DEFAULT);
+
         invalidate();
     }
 
@@ -216,7 +225,16 @@ public class AddTextItemView extends View {
     }
 
     private void drawText(Canvas canvas) {
+        //修正一下y坐标
+
+
         drawText(canvas, layout_x, layout_y, mScale, mRotateAngle);
+    }
+
+    public Rect getTextBounds(Paint paint, String text) {
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        return bounds;
     }
 
     public void drawText(Canvas canvas, int _x, int _y, float scale, float rotate) {
@@ -225,13 +243,27 @@ public class AddTextItemView extends View {
 
         int x = _x;
         int y = _y;
-        int text_height = 0;
 
-        mTextRect.set(0, 0, 0, 0);//clear
+        int textHeight = 0;
+        //clear
+        mTextRect.setEmpty();
         Rect tempRect = new Rect();
         Paint.FontMetricsInt fontMetrics = mPaint.getFontMetricsInt();
         int charMinHeight = Math.abs(fontMetrics.top) + Math.abs(fontMetrics.bottom);//字体高度
-        text_height = charMinHeight;
+//        int charMinHeight =Math.abs(fontMetrics.bottom-fontMetrics.top);//字体高度
+        Rect textBounds = getTextBounds(mPaint, mText);
+        int width= textBounds.width();
+        int height= textBounds.height();
+
+
+
+
+
+
+        textHeight = charMinHeight;
+
+        int totalHeight = 0;
+        int maxWidth = 0;
         //System.out.println("top = "+fontMetrics.top +"   bottom = "+fontMetrics.bottom);
         for (int i = 0; i < mTextContents.size(); i++) {
             String text = mTextContents.get(i);
@@ -239,32 +271,63 @@ public class AddTextItemView extends View {
             //System.out.println(i + " ---> " + tempRect.height());
             //text_height = Math.max(charMinHeight, tempRect.height());
             if (tempRect.height() <= 0) {//处理此行文字为空的情况
-                tempRect.set(0, 0, 0, text_height);
+                tempRect.set(0, 0, 0, textHeight);
+            }
+
+            totalHeight+= textHeight;
+            if (tempRect.width()>maxWidth){
+                maxWidth = tempRect.width();
             }
 
             RectUtil.rectAddV(mTextRect, tempRect, 0, charMinHeight);
-        }//end for i
+        }
+
+        x -= maxWidth / 2;
+
+        y = y -  totalHeight / 2;
+
 
         mTextRect.offset(x, y);
 
-        mHelpBoxRect.set(mTextRect.left - PADDING, mTextRect.top - PADDING
-                , mTextRect.right + PADDING, mTextRect.bottom + PADDING);
+//        mHelpBoxRect.set(
+//                mTextRect.left - PADDING,
+//                mTextRect.top - PADDING,
+//                mTextRect.right + PADDING,
+//                mTextRect.bottom + PADDING
+//        );
+
+        mHelpBoxRect.set(
+                mTextRect.left - PADDING,
+                mTextRect.top - PADDING,
+                mTextRect.right + PADDING,
+                mTextRect.bottom
+        );
+
+
         RectUtil.scaleRect(mHelpBoxRect, scale);
 
         canvas.save();
         canvas.scale(scale, scale, mHelpBoxRect.centerX(), mHelpBoxRect.centerY());
         canvas.rotate(rotate, mHelpBoxRect.centerX(), mHelpBoxRect.centerY());
 
+
+
         //canvas.drawRect(mTextRect, debugPaint);
         //float left = mHelpBoxRect.left - mTextRect.left;
         //float right = mHelpBoxRect.right - mTextRect.right;
 
         //System.out.println("left = "+left +"   right = "+right);
-        int draw_text_y = y + (text_height >> 1) + PADDING;
+//        int draw_text_y = y + (textHeight >> 1) + PADDING;
+        int draw_text_y = y + (textHeight >> 1);
         for (int i = 0; i < mTextContents.size(); i++) {
             canvas.drawText(mTextContents.get(i), x, draw_text_y, mPaint);
-            draw_text_y += text_height;
+            draw_text_y += textHeight;
         }//end for i
+
+//        canvas.drawCircle(canvas.getWidth(),canvas.getHeight(),20f,mPaint);
+        canvas.drawLine(canvas.getWidth()/2,0,canvas.getWidth()/2,canvas.getHeight(),mPaint);
+        canvas.drawLine(0,canvas.getHeight()/2,canvas.getWidth(),canvas.getHeight()/2,mPaint);
+
         canvas.restore();
     }
 
@@ -485,7 +548,8 @@ public class AddTextItemView extends View {
 
     public void resetView() {
         layout_x = getMeasuredWidth() / 2;
-        layout_y = getMeasuredHeight() / 2;
+
+        layout_y = getMeasuredWidth() / 2;
         mRotateAngle = 0;
         mScale = 1;
         mTextContents.clear();

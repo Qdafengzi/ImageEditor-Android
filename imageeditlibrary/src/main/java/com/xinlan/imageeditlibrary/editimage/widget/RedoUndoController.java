@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import com.xinlan.imageeditlibrary.R;
-import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.xinlan.imageeditlibrary.editimage.EditImageFragment;
 
 /**
  * Created by panyi on 2017/11/15.
@@ -15,7 +15,7 @@ public class RedoUndoController implements View.OnClickListener {
     private View mRootView;
     private View mUndoBtn;//撤销按钮
     private View mRedoBtn;//重做按钮
-    private EditImageActivity mActivity;
+    private EditImageFragment mActivity;
     private EditCache mEditCache = new EditCache();//保存前一次操作内容 用于撤销操作
 
     private EditCache.ListModify mObserver = new EditCache.ListModify() {
@@ -25,7 +25,7 @@ public class RedoUndoController implements View.OnClickListener {
         }
     };
 
-    public RedoUndoController(EditImageActivity activity, View panelView) {
+    public RedoUndoController(EditImageFragment activity, View panelView) {
         this.mActivity = activity;
         this.mRootView = panelView;
 

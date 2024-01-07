@@ -3,19 +3,19 @@ package com.xinlan.imageeditlibrary.editimage.fragment;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
-import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.xinlan.imageeditlibrary.editimage.EditImageFragment;
 
 /**
  * Created by panyi on 2017/3/28.
  */
 
 public abstract class BaseEditFragment extends Fragment {
-    protected EditImageActivity activity;
+    protected EditImageFragment activity;
 
-    protected EditImageActivity ensureEditActivity(){
-        if(activity==null){
-            activity = (EditImageActivity)getActivity();
-        }
+    protected EditImageFragment ensureEditActivity(){
+//        if(activity==null){
+//                activity = (EditImageFragment)getActivity();
+//        }
         return activity;
     }
 

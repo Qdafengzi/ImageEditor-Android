@@ -118,4 +118,20 @@ public class RectUtil {
 
         srcRect.set(left, top, right, bottom);
     }
+
+    public static void rectMinuteV(final Rect srcRect, final Rect addRect) {
+        if (srcRect == null || addRect == null)
+            return;
+
+        int left = srcRect.left;
+        int top = srcRect.top;
+        int right = srcRect.right;
+        int bottom = srcRect.bottom;
+
+        int width = addRect.width() / 2;
+        int height = addRect.height() / 2;
+
+
+        srcRect.set(left-width, top-height, right-width, bottom-height);
+    }
 }//end class

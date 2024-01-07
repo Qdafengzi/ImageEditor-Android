@@ -1,170 +1,177 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
-        android:id="@+id/banner"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_alignParentTop="true"
-        android:background="#333333"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <data>
 
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_gravity="left|center_vertical"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="0dp"
-            android:src="@drawable/back_arrow" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="@string/app_name"
-            android:textColor="#ffffff"
-            android:textSize="20sp" />
-
-        <ViewFlipper
-            android:id="@+id/banner_flipper"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_gravity="right"
-            android:layout_marginRight="10dp"
-            android:flipInterval="1000"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/save_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:gravity="center"
-                android:text="@string/save"
-                android:textColor="#ffffff"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/apply"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:gravity="center"
-                android:text="@string/apply"
-                android:textColor="#ffffff"
-                android:textSize="20sp" />
-        </ViewFlipper>
-    </FrameLayout>
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/work_space"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#fff"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/banner">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch
-            android:id="@+id/main_image"
+        <FrameLayout
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_alignParentTop="true"
+            android:background="#333333"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/back_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_margin="10dp"
+                android:layout_marginLeft="0dp"
+                android:src="@drawable/back_arrow" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="#ffffff"
+                android:textSize="20sp" />
+
+            <ViewFlipper
+                android:id="@+id/banner_flipper"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:flipInterval="1000"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/save_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:text="@string/save"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/apply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:text="@string/apply"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
+            </ViewFlipper>
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/work_space"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="#fff"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/banner">
 
-        <com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView
-            android:id="@+id/sticker_panel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch
+                android:id="@+id/main_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.xinlan.imageeditlibrary.editimage.view.AddTextItemView
-            android:id="@+id/text_sticker_panel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView
+                android:id="@+id/sticker_panel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.xinlan.imageeditlibrary.editimage.view.AddTextItemView
+                android:id="@+id/text_sticker_panel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/work_space">
-
-        <!--        <com.xinlan.imageeditlibrary.editimage.view.CustomViewPager-->
-        <!--            android:id="@+id/bottom_gallery"-->
-        <!--            android:layout_width="fill_parent"-->
-        <!--            android:layout_height="@dimen/bottom_banner_height"-->
-        <!--            android:layout_alignParentBottom="true"-->
-        <!--            android:background="@color/main_backgroud"-->
-        <!--            android:overScrollMode="never" />-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/work_space">
 
-            <Button
-                android:id="@+id/btn_image"
+            <!--        <com.xinlan.imageeditlibrary.editimage.view.CustomViewPager-->
+            <!--            android:id="@+id/bottom_gallery"-->
+            <!--            android:layout_width="fill_parent"-->
+            <!--            android:layout_height="@dimen/bottom_banner_height"-->
+            <!--            android:layout_alignParentBottom="true"-->
+            <!--            android:background="@color/main_backgroud"-->
+            <!--            android:overScrollMode="never" />-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="图" />
+
+
+                <Button
+                    android:id="@+id/btn_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="文字" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/redo_uodo_panel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="图" />
+                android:orientation="horizontal"
+                android:paddingLeft="8dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="5dp">
 
+                <ImageView
+                    android:id="@+id/uodo_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/uodo" />
 
-            <Button
-                android:id="@+id/btn_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="文字" />
-
+                <ImageView
+                    android:id="@+id/redo_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/redo" />
+            </LinearLayout>
         </LinearLayout>
 
-
-        <LinearLayout
-            android:id="@+id/redo_uodo_panel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp">
-
-            <ImageView
-                android:id="@+id/uodo_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:src="@drawable/uodo" />
-
-            <ImageView
-                android:id="@+id/redo_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:src="@drawable/redo" />
-        </LinearLayout>
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
