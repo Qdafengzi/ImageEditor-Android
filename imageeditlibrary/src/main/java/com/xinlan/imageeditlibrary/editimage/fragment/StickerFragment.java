@@ -24,8 +24,8 @@ import com.xinlan.imageeditlibrary.editimage.adapter.StickerAdapter;
 import com.xinlan.imageeditlibrary.editimage.adapter.StickerTypeAdapter;
 import com.xinlan.imageeditlibrary.editimage.model.StickerBean;
 import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
-import com.xinlan.imageeditlibrary.editimage.view.StickerItem;
-import com.xinlan.imageeditlibrary.editimage.view.StickerView;
+import com.xinlan.imageeditlibrary.editimage.view.AddImageItem;
+import com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +50,7 @@ public class StickerFragment extends BaseEditFragment {
     private RecyclerView typeList;// 贴图分类列表
     private RecyclerView stickerList;// 贴图素材列表
     private View backToType;// 返回类型选择
-    private StickerView mStickerView;// 贴图显示控件
+    private AddImageGroupView mAddImageGroupView;// 贴图显示控件
     private StickerAdapter mStickerAdapter;// 贴图列表适配器
 
     private LoadStickersTask mLoadStickersTask;
@@ -82,7 +82,7 @@ public class StickerFragment extends BaseEditFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.mStickerView = activity.mStickerView;
+        this.mAddImageGroupView = activity.mAddImageGroupView;
         flipper = (ViewFlipper) mainView.findViewById(R.id.flipper);
         flipper.setInAnimation(activity, R.anim.in_bottom_to_top);
         flipper.setOutAnimation(activity, R.anim.out_bottom_to_top);
@@ -223,15 +223,15 @@ public class StickerFragment extends BaseEditFragment {
      * @param path
      */
     public void selectedStickerItem(String path) {
-        mStickerView.addBitImage(getImageFromAssetsFile(path));
+        mAddImageGroupView.addBitImage(getImageFromAssetsFile(path));
     }
 
-    public StickerView getmStickerView() {
-        return mStickerView;
+    public AddImageGroupView getmStickerView() {
+        return mAddImageGroupView;
     }
 
-    public void setmStickerView(StickerView mStickerView) {
-        this.mStickerView = mStickerView;
+    public void setmStickerView(AddImageGroupView mAddImageGroupView) {
+        this.mAddImageGroupView = mAddImageGroupView;
     }
 
     /**
@@ -251,7 +251,7 @@ public class StickerFragment extends BaseEditFragment {
         activity.mode = EditImageActivity.MODE_NONE;
         //TODO:
         //activity.bottomGallery.setCurrentItem(0);
-        mStickerView.setVisibility(View.GONE);
+        mAddImageGroupView.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
     }
 
@@ -267,9 +267,9 @@ public class StickerFragment extends BaseEditFragment {
 
         @Override
         public void handleImage(Canvas canvas, Matrix m) {
-            LinkedHashMap<Integer, StickerItem> addItems = mStickerView.getBank();
+            LinkedHashMap<Integer, AddImageItem> addItems = mAddImageGroupView.getBank();
             for (Integer id : addItems.keySet()) {
-                StickerItem item = addItems.get(id);
+                AddImageItem item = addItems.get(id);
                 item.matrix.postConcat(m);// 乘以底部图片变化矩阵
                 canvas.drawBitmap(item.bitmap, item.matrix, null);
             }// end for
@@ -277,7 +277,7 @@ public class StickerFragment extends BaseEditFragment {
 
         @Override
         public void onPostResult(Bitmap result) {
-            mStickerView.clear();
+            mAddImageGroupView.clear();
             activity.changeMainBitmap(result,true);
             backToMain();
         }

@@ -32,7 +32,7 @@ import java.util.List;
  * <p/>
  * Created by panyi on 2016/6/9.
  */
-public class TextStickerView extends View {
+public class AddTextItemView extends View {
     public static final float TEXT_SIZE_DEFAULT = 80;
     public static final int PADDING = 32;
     //public static final int PADDING = 0;
@@ -89,17 +89,17 @@ public class TextStickerView extends View {
 
     private Point mPoint = new Point(0, 0);
 
-    public TextStickerView(Context context) {
+    public AddTextItemView(Context context) {
         super(context);
         initView(context);
     }
 
-    public TextStickerView(Context context, AttributeSet attrs) {
+    public AddTextItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
 
-    public TextStickerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AddTextItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
     }

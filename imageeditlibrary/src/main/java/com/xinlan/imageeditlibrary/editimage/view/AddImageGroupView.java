@@ -13,7 +13,6 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -27,7 +26,7 @@ import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
  *
  * @author panyi
  */
-public class StickerView extends View {
+public class AddImageGroupView extends View {
     private static final int STATUS_IDLE = 0;
     private static int STATUS_MOVE = 1;// 移动状态
     private static int STATUS_DELETE = 2;// 删除状态
@@ -36,7 +35,7 @@ public class StickerView extends View {
 
     private int imageCount;// 已加入照片的数量
     private int currentStatus;// 当前状态
-    private StickerItem currentItem;// 当前操作的贴图数据
+    private AddImageItem currentItem;// 当前操作的贴图数据
     private float oldx, oldy;
 
     private RectF shaderRec = new RectF();
@@ -45,21 +44,21 @@ public class StickerView extends View {
 
 //    private Paint rectPaint = new Paint();
 
-    private LinkedHashMap<Integer, StickerItem> bank = new LinkedHashMap<Integer, StickerItem>();// 存贮每层贴图数据
+    private LinkedHashMap<Integer, AddImageItem> bank = new LinkedHashMap<Integer, AddImageItem>();// 存贮每层贴图数据
 
     private Point mPoint = new Point(0 , 0);
 
-    public StickerView(Context context) {
+    public AddImageGroupView(Context context) {
         super(context);
         init(context);
     }
 
-    public StickerView(Context context, AttributeSet attrs) {
+    public AddImageGroupView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public StickerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AddImageGroupView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -90,7 +89,7 @@ public class StickerView extends View {
     }
 
     public void addBitImage(final Bitmap addBit) {
-        StickerItem item = new StickerItem(this.getContext());
+        AddImageItem item = new AddImageItem(this.getContext());
         item.init(addBit, this);
         if (currentItem != null) {
             currentItem.isDrawHelpTool = false;
@@ -107,7 +106,7 @@ public class StickerView extends View {
         super.onDraw(canvas);
         // System.out.println("on draw!!~");
         for (Integer id : bank.keySet()) {
-            StickerItem item = bank.get(id);
+            AddImageItem item = bank.get(id);
             item.draw(canvas);
         }// end for each
 
@@ -138,7 +137,7 @@ public class StickerView extends View {
 
                 int deleteId = -1;
                 for (Integer id : bank.keySet()) {
-                    StickerItem item = bank.get(id);
+                    AddImageItem item = bank.get(id);
                     if (item.detectDeleteRect.contains(x, y)) {// 删除模式
                         // ret = true;
                         deleteId = id;
@@ -239,7 +238,7 @@ public class StickerView extends View {
      * @param y
      * @return
      */
-    private boolean detectInItemContent(StickerItem item , float x , float y){
+    private boolean detectInItemContent(AddImageItem item , float x , float y){
         //reset
         mPoint.set((int)x , (int)y);
         //旋转点击点
@@ -247,7 +246,7 @@ public class StickerView extends View {
         return item.helpBox.contains(mPoint.x, mPoint.y);
     }
 
-    public LinkedHashMap<Integer, StickerItem> getBank() {
+    public LinkedHashMap<Integer, AddImageItem> getBank() {
         return bank;
     }
 

@@ -4,8 +4,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
-
 /**
  * Created by panyi on 2016/6/16.
  */

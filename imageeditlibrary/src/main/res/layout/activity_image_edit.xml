@@ -82,7 +82,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.xinlan.imageeditlibrary.editimage.view.StickerView
+        <com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView
             android:id="@+id/sticker_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.xinlan.imageeditlibrary.editimage.view.TextStickerView
+        <com.xinlan.imageeditlibrary.editimage.view.AddTextItemView
             android:id="@+id/text_sticker_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

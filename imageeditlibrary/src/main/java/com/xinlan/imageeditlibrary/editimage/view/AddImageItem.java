@@ -5,19 +5,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.Log;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ComplexColorCompat;
 
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
@@ -26,7 +22,7 @@ import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
 /**
  * @author panyi
  */
-public class StickerItem {
+public class AddImageItem {
     private static final float MIN_SCALE = 0.15f;
     private static final int HELP_BOX_PAD = 25;
 
@@ -62,7 +58,7 @@ public class StickerItem {
     private Context context;
 
 
-    public StickerItem(Context context) {
+    public AddImageItem(Context context) {
         this.context = context;
         helpBoxPaint.setColor(ContextCompat.getColor(context,R.color.rect_frame));
         helpBoxPaint.setStyle(Style.STROKE);

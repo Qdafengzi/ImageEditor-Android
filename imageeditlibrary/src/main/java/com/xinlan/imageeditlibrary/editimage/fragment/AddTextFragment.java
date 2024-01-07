@@ -23,7 +23,7 @@ import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
 import com.xinlan.imageeditlibrary.editimage.ui.ColorPicker;
-import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
+import com.xinlan.imageeditlibrary.editimage.view.AddTextItemView;
 
 import java.util.Random;
 
@@ -42,7 +42,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
 
     private EditText mInputText;//输入框
     private ImageView mTextColorSelector;//颜色选择器
-    private TextStickerView mTextStickerView;// 文字贴图显示控件
+    private AddTextItemView mAddTextItemView;// 文字贴图显示控件
     private CheckBox mAutoNewLineCheck;
 
     private ColorPicker mColorPicker;
@@ -74,7 +74,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mTextStickerView = (TextStickerView)getActivity().findViewById(R.id.text_sticker_panel);
+        mAddTextItemView = (AddTextItemView)getActivity().findViewById(R.id.text_sticker_panel);
 
         backToMenu = mainView.findViewById(R.id.back_to_main);
         mInputText = (EditText) mainView.findViewById(R.id.text_input);
@@ -92,18 +92,18 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
             }
         });
         mInputText.addTextChangedListener(this);
-        mTextStickerView.setEditText(mInputText);
+        mAddTextItemView.setEditText(mInputText);
 
         //统一颜色设置
         mTextColorSelector.setBackgroundColor(mColorPicker.getColor());
-        mTextStickerView.setTextColor(mColorPicker.getColor());
+        mAddTextItemView.setTextColor(mColorPicker.getColor());
     }
 
     @Override
     public void afterTextChanged(Editable s) {
         //mTextStickerView change
         String text = s.toString().trim();
-        mTextStickerView.setText(text);
+        mAddTextItemView.setText(text);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     private void changeTextColor(int newColor) {
         this.mTextColor = newColor;
         mTextColorSelector.setBackgroundColor(mTextColor);
-        mTextStickerView.setTextColor(mTextColor);
+        mAddTextItemView.setTextColor(mTextColor);
     }
 
     public void hideInput() {
@@ -179,7 +179,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         //activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
-        mTextStickerView.setVisibility(View.GONE);
+        mAddTextItemView.setVisibility(View.GONE);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         activity.mode = EditImageActivity.MODE_TEXT;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.bannerFlipper.showNext();
-        mTextStickerView.setVisibility(View.VISIBLE);
+        mAddTextItemView.setVisibility(View.VISIBLE);
         mInputText.clearFocus();
     }
 
@@ -226,15 +226,15 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
             canvas.translate(dx, dy);
             canvas.scale(scale_x, scale_y);
             //System.out.println("scale = " + scale_x + "       " + scale_y + "     " + dx + "    " + dy);
-            mTextStickerView.drawText(canvas, mTextStickerView.layout_x,
-                    mTextStickerView.layout_y, mTextStickerView.mScale, mTextStickerView.mRotateAngle);
+            mAddTextItemView.drawText(canvas, mAddTextItemView.layout_x,
+                    mAddTextItemView.layout_y, mAddTextItemView.mScale, mAddTextItemView.mRotateAngle);
             canvas.restore();
         }
 
         @Override
         public void onPostResult(Bitmap result) {
-            mTextStickerView.clearTextContent();
-            mTextStickerView.resetView();
+            mAddTextItemView.clearTextContent();
+            mAddTextItemView.resetView();
 
             activity.changeMainBitmap(result , true);
             backToMain();

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -28,8 +26,8 @@ import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.StickerFragment;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
-import com.xinlan.imageeditlibrary.editimage.view.StickerView;
-import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
+import com.xinlan.imageeditlibrary.editimage.view.AddImageGroupView;
+import com.xinlan.imageeditlibrary.editimage.view.AddTextItemView;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
@@ -76,8 +74,8 @@ public class EditImageActivity extends BaseActivity {
     private View applyBtn;// 应用按钮
     private View saveBtn;// 保存按钮
 
-    public StickerView mStickerView;// 贴图层View
-    public TextStickerView mTextStickerView;//文本贴图显示View
+    public AddImageGroupView mAddImageGroupView;// 贴图层View
+    public AddTextItemView mAddTextItemView;//文本贴图显示View
 
     //    public CustomViewPager bottomGallery;// 底部gallery
 //    private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
@@ -144,35 +142,35 @@ public class EditImageActivity extends BaseActivity {
             }
         });
 
-        mStickerView = (StickerView) findViewById(R.id.sticker_panel);
+        mAddImageGroupView = (AddImageGroupView) findViewById(R.id.sticker_panel);
         mainImage.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                mStickerView.setRootImageRect(mainImage.getRootImageRect(), mainImage.getWidth(), mainImage.getHeight());
+                mAddImageGroupView.setRootImageRect(mainImage.getRootImageRect(), mainImage.getWidth(), mainImage.getHeight());
             }
         });
 
 
-        mTextStickerView = (TextStickerView) findViewById(R.id.text_sticker_panel);
+        mAddTextItemView = (AddTextItemView) findViewById(R.id.text_sticker_panel);
 
         Button buttonImage = findViewById(R.id.btn_image);
         Button buttonText = findViewById(R.id.btn_text);
         buttonImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mStickerView.setVisibility(View.VISIBLE);
-                mTextStickerView.setVisibility(View.GONE);
+                mAddImageGroupView.setVisibility(View.VISIBLE);
+                mAddTextItemView.setVisibility(View.GONE);
                 Bitmap bitmap =  getImageFromAssetsFile("stickers/type1/1.png");
-                mStickerView.addBitImage(bitmap);
+                mAddImageGroupView.addBitImage(bitmap);
             }
         });
 
         buttonText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mStickerView.setVisibility(View.GONE);
-                mTextStickerView.setVisibility(View.VISIBLE);
-                mTextStickerView.setText("哈哈哈哈/ndjksahdslls\ndsakjio3qikj");
+                mAddImageGroupView.setVisibility(View.GONE);
+                mAddTextItemView.setVisibility(View.VISIBLE);
+                mAddTextItemView.setText("哈哈哈哈/ndjksahdslls\ndsakjio3qikj");
             }
         });
 
