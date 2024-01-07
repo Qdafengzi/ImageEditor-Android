@@ -3,15 +3,22 @@ package com.xinlan.imageeditlibrary.editimage.view.imagezoom;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
+
+import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.easing.Cubic;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.easing.Easing;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.graphic.FastBitmapDrawable;
@@ -24,7 +31,7 @@ import com.xinlan.imageeditlibrary.editimage.view.imagezoom.utils.IDisposable;
  * @author alessandro
  * 
  */
-public abstract class ImageViewTouchBase extends ImageView implements IDisposable {
+public abstract class ImageViewTouchBase extends androidx.appcompat.widget.AppCompatImageView implements IDisposable {
 
 	public interface OnDrawableChangeListener {
 
@@ -106,6 +113,8 @@ public abstract class ImageViewTouchBase extends ImageView implements IDisposabl
 	private OnDrawableChangeListener mDrawableChangeListener;
 	private OnLayoutChangeListener mOnLayoutChangeListener;
 
+	private final Paint shaderPaint = new Paint();
+
 	public ImageViewTouchBase(Context context) {
 		super(context);
 		init();
@@ -125,6 +134,7 @@ public abstract class ImageViewTouchBase extends ImageView implements IDisposabl
 	}
 
 	protected void init() {
+		shaderPaint.setColor(ContextCompat.getColor(this.getContext(), R.color.shader));
 		setScaleType(ScaleType.MATRIX);
 	}
 
@@ -733,6 +743,10 @@ public abstract class ImageViewTouchBase extends ImageView implements IDisposabl
 
 	public RectF getBitmapRect() {
 		return getBitmapRect(mSuppMatrix);
+	}
+
+	public RectF getRootImageRect() {
+		return mBitmapRect;
 	}
 
 	protected RectF getBitmapRect(Matrix supportMatrix) {

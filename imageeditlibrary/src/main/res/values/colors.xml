@@ -13,4 +13,8 @@
     <color name="materialcolorpicker__dialogcolor">#009688</color>
     <color name="hint_foreground_material_light">#00000000</color>
     <color name="hint_foreground_material_dark">#00000000</color>
+
+
+    <color name="rect_frame">#FF0099A1</color>
+    <color name="shader">#4D000000</color>
 </resources>

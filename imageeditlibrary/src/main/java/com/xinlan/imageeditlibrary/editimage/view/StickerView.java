@@ -3,16 +3,23 @@ package com.xinlan.imageeditlibrary.editimage.view;
 
 import java.util.LinkedHashMap;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
+import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
 
 /**
@@ -21,19 +28,22 @@ import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
  * @author panyi
  */
 public class StickerView extends View {
-    private static int STATUS_IDLE = 0;
+    private static final int STATUS_IDLE = 0;
     private static int STATUS_MOVE = 1;// 移动状态
     private static int STATUS_DELETE = 2;// 删除状态
-    private static int STATUS_ROTATE = 3;// 图片旋转状态
+    private static int STATUS_SCALE = 3;// 图片旋转状态
+    private static int STATUS_ROTATE = 4;// 图片缩放模式
 
     private int imageCount;// 已加入照片的数量
-    private Context mContext;
     private int currentStatus;// 当前状态
     private StickerItem currentItem;// 当前操作的贴图数据
     private float oldx, oldy;
 
-    private Paint rectPaint = new Paint();
-    private Paint boxPaint = new Paint();
+    private RectF shaderRec = new RectF();
+    private final Paint shaderPaint = new Paint();
+
+
+//    private Paint rectPaint = new Paint();
 
     private LinkedHashMap<Integer, StickerItem> bank = new LinkedHashMap<Integer, StickerItem>();// 存贮每层贴图数据
 
@@ -55,12 +65,28 @@ public class StickerView extends View {
     }
 
     private void init(Context context) {
-        this.mContext = context;
         currentStatus = STATUS_IDLE;
 
-        rectPaint.setColor(Color.RED);
-        rectPaint.setAlpha(100);
 
+//        rectPaint.setColor(Color.RED);
+//        rectPaint.setAlpha(100);
+
+    }
+
+
+
+    Path screenPath = new Path();
+    Path cropPath = new Path();
+    Path combinedPath = new Path();
+    public void setRootImageRect(RectF bitmapRect, int width, int height){
+        shaderPaint.setColor(ContextCompat.getColor(this.getContext(),R.color.white));
+        shaderRec = bitmapRect;
+        screenPath.addRect(new RectF(0f, 0f,width, height), Path.Direction.CCW);
+        RectF cropRect = new RectF(shaderRec.left,
+                shaderRec.top,
+                shaderRec.right,
+                shaderRec.bottom);
+        cropPath.addRect(cropRect, Path.Direction.CW);
     }
 
     public void addBitImage(final Bitmap addBit) {
@@ -84,6 +110,13 @@ public class StickerView extends View {
             StickerItem item = bank.get(id);
             item.draw(canvas);
         }// end for each
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            combinedPath.op(screenPath, cropPath, Path.Op.DIFFERENCE);
+        }
+        //绘制遮蔽层
+        canvas.drawPath(combinedPath,shaderPaint);
+
     }
 
     @Override
@@ -92,6 +125,7 @@ public class StickerView extends View {
         // System.out.println(w + "   " + h + "    " + oldw + "   " + oldh);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean ret = super.onTouchEvent(event);// 是否向下传递事件标志 true为消耗
@@ -109,7 +143,7 @@ public class StickerView extends View {
                         // ret = true;
                         deleteId = id;
                         currentStatus = STATUS_DELETE;
-                    } else if (item.detectRotateRect.contains(x, y)) {// 点击了旋转按钮
+                    }else if (item.detectRotateRect.contains(x, y)){
                         ret = true;
                         if (currentItem != null) {
                             currentItem.isDrawHelpTool = false;
@@ -117,6 +151,16 @@ public class StickerView extends View {
                         currentItem = item;
                         currentItem.isDrawHelpTool = true;
                         currentStatus = STATUS_ROTATE;
+                        oldx = x;
+                        oldy = y;
+                    } else if (item.detectScaleRect.contains(x, y)) {// 点击了旋转按钮
+                        ret = true;
+                        if (currentItem != null) {
+                            currentItem.isDrawHelpTool = false;
+                        }
+                        currentItem = item;
+                        currentItem.isDrawHelpTool = true;
+                        currentStatus = STATUS_SCALE;
                         oldx = x;
                         oldy = y;
                     } else if (detectInItemContent(item , x , y)) {// 移动模式
@@ -130,7 +174,8 @@ public class StickerView extends View {
                         currentStatus = STATUS_MOVE;
                         oldx = x;
                         oldy = y;
-                    }// end if
+                    }
+                    // end if
                 }// end for each
 
                 if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
@@ -157,12 +202,21 @@ public class StickerView extends View {
                     }// end if
                     oldx = x;
                     oldy = y;
-                } else if (currentStatus == STATUS_ROTATE) {// 旋转 缩放图片操作
+                } else if (currentStatus == STATUS_SCALE) {// 旋转 缩放图片操作
                     // System.out.println("旋转");
                     float dx = x - oldx;
                     float dy = y - oldy;
                     if (currentItem != null) {
-                        currentItem.updateRotateAndScale(oldx, oldy, dx, dy);// 旋转
+                        currentItem.updateScale(oldx, oldy, dx, dy);// 旋转
+                        invalidate();
+                    }// end if
+                    oldx = x;
+                    oldy = y;
+                }else if (currentStatus == STATUS_ROTATE){
+                    float dx = x - oldx;
+                    float dy = y - oldy;
+                    if (currentItem != null) {
+                        currentItem.updateRotate(oldx, oldy, dx, dy);// 旋转
                         invalidate();
                     }// end if
                     oldx = x;
@@ -189,7 +243,7 @@ public class StickerView extends View {
         //reset
         mPoint.set((int)x , (int)y);
         //旋转点击点
-        RectUtil.rotatePoint(mPoint , item.helpBox.centerX() , item.helpBox.centerY() , -item.roatetAngle);
+        RectUtil.rotatePoint(mPoint , item.helpBox.centerX() , item.helpBox.centerY() , -item.rotateAngle);
         return item.helpBox.contains(mPoint.x, mPoint.y);
     }
 

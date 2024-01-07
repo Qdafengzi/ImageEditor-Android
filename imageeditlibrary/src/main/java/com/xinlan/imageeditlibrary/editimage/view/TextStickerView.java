@@ -1,17 +1,15 @@
 package com.xinlan.imageeditlibrary.editimage.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.text.DynamicLayout;
-import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -19,11 +17,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.core.content.ContextCompat;
+
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.utils.ListUtil;
 import com.xinlan.imageeditlibrary.editimage.utils.RectUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,21 +51,25 @@ public class TextStickerView extends View {
     private RectF mHelpBoxRect = new RectF();
     private Rect mDeleteRect = new Rect();//删除按钮位置
     private Rect mRotateRect = new Rect();//旋转按钮位置
+    private Rect mScaleRect = new Rect();//旋转按钮位置
 
     private RectF mDeleteDstRect = new RectF();
     private RectF mRotateDstRect = new RectF();
+    private RectF mScaleDstRect = new RectF();
 
     private Bitmap mDeleteBitmap;
     private Bitmap mRotateBitmap;
+    private Bitmap mScaleBitmap;
 
     private int mCurrentMode = IDLE_MODE;
     //控件的几种模式
     private static final int IDLE_MODE = 2;//正常
     private static final int MOVE_MODE = 3;//移动模式
-    private static final int ROTATE_MODE = 4;//旋转模式
+    private static final int SCALE_MODE = 4;//旋转模式
     private static final int DELETE_MODE = 5;//删除模式
+    private static final int ROTATE_MODE = 6;//旋转模式
 
-    private EditText mEditText;//输入控件
+//    private EditText mEditText;//输入控件
 
     public int layout_x = 0;
     public int layout_y = 0;
@@ -82,7 +87,7 @@ public class TextStickerView extends View {
     private List<String> mTextContents = new ArrayList<String>(2);//存放所写的文字内容
     private String mText;
 
-    private Point mPoint = new Point(0,0);
+    private Point mPoint = new Point(0, 0);
 
     public TextStickerView(Context context) {
         super(context);
@@ -100,22 +105,28 @@ public class TextStickerView extends View {
     }
 
     public void setEditText(EditText textView) {
-        this.mEditText = textView;
+//        this.mEditText = textView;
     }
 
     private void initView(Context context) {
         debugPaint.setColor(Color.parseColor("#66ff0000"));
 
         mDeleteBitmap = BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.sticker_delete);
+                R.drawable.ic_delete);
+
         mRotateBitmap = BitmapFactory.decodeResource(context.getResources(),
-                R.drawable.sticker_rotate);
+                R.drawable.ic_rotate);
+
+        mScaleBitmap = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.ic_scale);
 
         mDeleteRect.set(0, 0, mDeleteBitmap.getWidth(), mDeleteBitmap.getHeight());
         mRotateRect.set(0, 0, mRotateBitmap.getWidth(), mRotateBitmap.getHeight());
+        mScaleRect.set(0, 0, mScaleBitmap.getWidth(), mScaleBitmap.getHeight());
 
         mDeleteDstRect = new RectF(0, 0, Constants.STICKER_BTN_HALF_SIZE << 1, Constants.STICKER_BTN_HALF_SIZE << 1);
         mRotateDstRect = new RectF(0, 0, Constants.STICKER_BTN_HALF_SIZE << 1, Constants.STICKER_BTN_HALF_SIZE << 1);
+        mScaleDstRect = new RectF(0, 0, Constants.STICKER_BTN_HALF_SIZE << 1, Constants.STICKER_BTN_HALF_SIZE << 1);
 
         mPaint.setColor(Color.WHITE);
         mPaint.setTextAlign(Paint.Align.CENTER);
@@ -123,7 +134,7 @@ public class TextStickerView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.LEFT);
 
-        mHelpPaint.setColor(Color.BLACK);
+        mHelpPaint.setColor(ContextCompat.getColor(context, R.color.rect_frame));
         mHelpPaint.setStyle(Paint.Style.STROKE);
         mHelpPaint.setAntiAlias(true);
         mHelpPaint.setStrokeWidth(4);
@@ -162,26 +173,27 @@ public class TextStickerView extends View {
     protected void parseText() {
         if (TextUtils.isEmpty(mText))
             return;
-
         mTextContents.clear();
-
         String[] splits = mText.split("\n");
-        for (String text : splits) {
-            mTextContents.add(text);
-        }//end for each
+        //end for each
+        mTextContents.addAll(Arrays.asList(splits));
     }
 
     private void drawContent(Canvas canvas) {
         drawText(canvas);
-
         //draw x and rotate button
         int offsetValue = ((int) mDeleteDstRect.width()) >> 1;
+
         mDeleteDstRect.offsetTo(mHelpBoxRect.left - offsetValue, mHelpBoxRect.top - offsetValue);
-        mRotateDstRect.offsetTo(mHelpBoxRect.right - offsetValue, mHelpBoxRect.bottom - offsetValue);
+        mRotateDstRect.offsetTo(mHelpBoxRect.left - offsetValue, mHelpBoxRect.bottom - offsetValue);
+        mScaleDstRect.offsetTo(mHelpBoxRect.right - offsetValue, mHelpBoxRect.bottom - offsetValue);
 
         RectUtil.rotateRect(mDeleteDstRect, mHelpBoxRect.centerX(),
                 mHelpBoxRect.centerY(), mRotateAngle);
+
         RectUtil.rotateRect(mRotateDstRect, mHelpBoxRect.centerX(),
+                mHelpBoxRect.centerY(), mRotateAngle);
+        RectUtil.rotateRect(mScaleDstRect, mHelpBoxRect.centerX(),
                 mHelpBoxRect.centerY(), mRotateAngle);
 
         if (!isShowHelpBox) {
@@ -190,11 +202,12 @@ public class TextStickerView extends View {
 
         canvas.save();
         canvas.rotate(mRotateAngle, mHelpBoxRect.centerX(), mHelpBoxRect.centerY());
-        canvas.drawRoundRect(mHelpBoxRect, 10, 10, mHelpPaint);
+        canvas.drawRect(mHelpBoxRect, mHelpPaint);
         canvas.restore();
 
         canvas.drawBitmap(mDeleteBitmap, mDeleteRect, mDeleteDstRect, null);
         canvas.drawBitmap(mRotateBitmap, mRotateRect, mRotateDstRect, null);
+        canvas.drawBitmap(mScaleBitmap, mScaleRect, mScaleDstRect, null);
 
         //debug
 //        canvas.drawRect(mRotateDstRect, debugPaint);
@@ -255,6 +268,7 @@ public class TextStickerView extends View {
         canvas.restore();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean ret = super.onTouchEvent(event);// 是否向下传递事件标志 true为消耗
@@ -267,13 +281,19 @@ public class TextStickerView extends View {
                 if (mDeleteDstRect.contains(x, y)) {// 删除模式
                     isShowHelpBox = true;
                     mCurrentMode = DELETE_MODE;
+                } else if (mScaleDstRect.contains(x, y)) {// 旋转按钮
+                    isShowHelpBox = true;
+                    mCurrentMode = SCALE_MODE;
+                    last_x = mScaleDstRect.centerX();
+                    last_y = mScaleDstRect.centerY();
+                    ret = true;
                 } else if (mRotateDstRect.contains(x, y)) {// 旋转按钮
                     isShowHelpBox = true;
                     mCurrentMode = ROTATE_MODE;
                     last_x = mRotateDstRect.centerX();
                     last_y = mRotateDstRect.centerY();
                     ret = true;
-                } else if (detectInHelpBox(x , y)) {// 移动模式
+                } else if (detectInHelpBox(x, y)) {// 移动模式
                     isShowHelpBox = true;
                     mCurrentMode = MOVE_MODE;
                     last_x = x;
@@ -293,24 +313,24 @@ public class TextStickerView extends View {
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 if (mCurrentMode == MOVE_MODE) {// 移动贴图
-                    mCurrentMode = MOVE_MODE;
                     float dx = x - last_x;
                     float dy = y - last_y;
-
                     layout_x += dx;
                     layout_y += dy;
-
                     invalidate();
-
+                    last_x = x;
+                    last_y = y;
+                } else if (mCurrentMode == SCALE_MODE) {// 旋转 缩放文字操作
+                    float dx = x - last_x;
+                    float dy = y - last_y;
+                    updateScale(dx, dy);
+                    invalidate();
                     last_x = x;
                     last_y = y;
                 } else if (mCurrentMode == ROTATE_MODE) {// 旋转 缩放文字操作
-                    mCurrentMode = ROTATE_MODE;
                     float dx = x - last_x;
                     float dy = y - last_y;
-
-                    updateRotateAndScale(dx, dy);
-
+                    updateRotate(dx, dy);
                     invalidate();
                     last_x = x;
                     last_y = y;
@@ -321,7 +341,7 @@ public class TextStickerView extends View {
                 ret = false;
                 mCurrentMode = IDLE_MODE;
                 break;
-        }// end switch
+        }
 
         return ret;
     }
@@ -333,19 +353,20 @@ public class TextStickerView extends View {
      * @param y
      * @return
      */
-    private boolean detectInHelpBox(float x , float y){
+    private boolean detectInHelpBox(float x, float y) {
         //mRotateAngle
-        mPoint.set((int)x , (int)y);
+        mPoint.set((int) x, (int) y);
         //旋转点击点
-        RectUtil.rotatePoint(mPoint , mHelpBoxRect.centerX() , mHelpBoxRect.centerY() , -mRotateAngle);
+        RectUtil.rotatePoint(mPoint, mHelpBoxRect.centerX(), mHelpBoxRect.centerY(), -mRotateAngle);
         return mHelpBoxRect.contains(mPoint.x, mPoint.y);
     }
 
     public void clearTextContent() {
-        if (mEditText != null) {
-            mEditText.setText(null);
-        }
+//        if (mEditText != null) {
+//            mEditText.setText(null);
+//        }
         //setText(null);
+        setText("");
     }
 
 
@@ -359,8 +380,8 @@ public class TextStickerView extends View {
         float c_x = mHelpBoxRect.centerX();
         float c_y = mHelpBoxRect.centerY();
 
-        float x = mRotateDstRect.centerX();
-        float y = mRotateDstRect.centerY();
+        float x = mScaleDstRect.centerX();
+        float y = mScaleDstRect.centerY();
 
         float n_x = x + dx;
         float n_y = y + dy;
@@ -383,6 +404,77 @@ public class TextStickerView extends View {
             mScale /= scale;
             return;
         }
+
+        double cos = (xa * xb + ya * yb) / (srcLen * curLen);
+        if (cos > 1 || cos < -1)
+            return;
+        float angle = (float) Math.toDegrees(Math.acos(cos));
+        float calMatrix = xa * yb - xb * ya;// 行列式计算 确定转动方向
+
+        int flag = calMatrix > 0 ? 1 : -1;
+        angle = flag * angle;
+
+        mRotateAngle += angle;
+    }
+
+    public void updateScale(final float dx, final float dy) {
+        float c_x = mHelpBoxRect.centerX();
+        float c_y = mHelpBoxRect.centerY();
+
+        float x = mScaleDstRect.centerX();
+        float y = mScaleDstRect.centerY();
+
+        float n_x = x + dx;
+        float n_y = y + dy;
+
+        float xa = x - c_x;
+        float ya = y - c_y;
+
+        float xb = n_x - c_x;
+        float yb = n_y - c_y;
+
+        float srcLen = (float) Math.sqrt(xa * xa + ya * ya);
+        float curLen = (float) Math.sqrt(xb * xb + yb * yb);
+
+        float scale = curLen / srcLen;// 计算缩放比
+
+        mScale *= scale;
+        float newWidth = mHelpBoxRect.width() * mScale;
+
+        if (newWidth < 70) {
+            mScale /= scale;
+        }
+    }
+
+
+    public void updateRotate(final float dx, final float dy) {
+        float c_x = mHelpBoxRect.centerX();
+        float c_y = mHelpBoxRect.centerY();
+
+        float x = mScaleDstRect.centerX();
+        float y = mScaleDstRect.centerY();
+
+        float n_x = x + dx;
+        float n_y = y + dy;
+
+        float xa = x - c_x;
+        float ya = y - c_y;
+
+        float xb = n_x - c_x;
+        float yb = n_y - c_y;
+
+        float srcLen = (float) Math.sqrt(xa * xa + ya * ya);
+        float curLen = (float) Math.sqrt(xb * xb + yb * yb);
+
+//        float scale = curLen / srcLen;// 计算缩放比
+
+//        mScale *= scale;
+//        float newWidth = mHelpBoxRect.width() * mScale;
+//
+//        if (newWidth < 70) {
+//            mScale /= scale;
+//            return;
+//        }
 
         double cos = (xa * xb + ya * yb) / (srcLen * curLen);
         if (cos > 1 || cos < -1)

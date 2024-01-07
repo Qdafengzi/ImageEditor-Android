@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,27 +15,28 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
-import com.xinlan.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.StickerFragment;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
-import com.xinlan.imageeditlibrary.editimage.utils.FileUtil;
-import com.xinlan.imageeditlibrary.editimage.view.CustomViewPager;
 import com.xinlan.imageeditlibrary.editimage.view.StickerView;
 import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>
@@ -54,10 +58,9 @@ public class EditImageActivity extends BaseActivity {
     public static final int MODE_STICKERS = 1;// 贴图模式
     public static final int MODE_TEXT = 5;// 文字模式
 
-    public String filePath;// 需要编辑图片路径
     public String saveFilePath;// 生成的新图片路径
-    private int imageWidth, imageHeight;// 展示图片控件 宽 高
-    private LoadImageTask mLoadImageTask;
+//    private int imageWidth, imageHeight;// 展示图片控件 宽 高
+//    private LoadImageTask mLoadImageTask;
 
     public int mode = MODE_NONE;// 当前操作模式
 
@@ -76,11 +79,11 @@ public class EditImageActivity extends BaseActivity {
     public StickerView mStickerView;// 贴图层View
     public TextStickerView mTextStickerView;//文本贴图显示View
 
-    public CustomViewPager bottomGallery;// 底部gallery
-    private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
-    private MainMenuFragment mMainMenuFragment;// Menu
-    public StickerFragment mStickerFragment;// 贴图Fragment
-    public AddTextFragment mAddTextFragment;//图片添加文字
+    //    public CustomViewPager bottomGallery;// 底部gallery
+//    private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
+//    private MainMenuFragment mMainMenuFragment;// Menu
+    public StickerFragment mStickerFragment = StickerFragment.newInstance();// 贴图Fragment
+    public AddTextFragment mAddTextFragment = AddTextFragment.newInstance();//图片添加文字
     private SaveImageTask mSaveImageTask;
 
     private RedoUndoController mRedoUndoController;//撤销操作
@@ -113,16 +116,16 @@ public class EditImageActivity extends BaseActivity {
     }
 
     private void getData() {
-        filePath = getIntent().getStringExtra(FILE_PATH);
-        saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
-        loadImage(filePath);
+        saveFilePath = new File(getCacheDir().getAbsolutePath(), "tietu" + System.currentTimeMillis() + ".png").getAbsolutePath();
+        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_editor);
+        changeMainBitmap(bitmap, false);
     }
 
     private void initView() {
         mContext = this;
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        imageWidth = metrics.widthPixels / 2;
-        imageHeight = metrics.heightPixels / 2;
+//        imageWidth = metrics.widthPixels / 2;
+//        imageHeight = metrics.heightPixels / 2;
 
         bannerFlipper = (ViewFlipper) findViewById(R.id.banner_flipper);
         bannerFlipper.setInAnimation(this, R.anim.in_bottom_to_top);
@@ -142,32 +145,40 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mStickerView = (StickerView) findViewById(R.id.sticker_panel);
-//        mCropPanel = (CropImageView) findViewById(R.id.crop_panel);
-//        mRotatePanel = (RotateImageView) findViewById(R.id.rotate_panel);
+        mainImage.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mStickerView.setRootImageRect(mainImage.getRootImageRect(), mainImage.getWidth(), mainImage.getHeight());
+            }
+        });
+
+
         mTextStickerView = (TextStickerView) findViewById(R.id.text_sticker_panel);
-//        mPaintView = (CustomPaintView) findViewById(R.id.custom_paint_view);
 
-        // 底部gallery
-        bottomGallery = (CustomViewPager) findViewById(R.id.bottom_gallery);
-        //bottomGallery.setOffscreenPageLimit(7);
-        mMainMenuFragment = MainMenuFragment.newInstance();
-        mBottomGalleryAdapter = new BottomGalleryAdapter(
-                this.getSupportFragmentManager());
-        mStickerFragment = StickerFragment.newInstance();
-//        mFilterListFragment = FilterListFragment.newInstance();
-//        mCropFragment = CropFragment.newInstance();
-//        mRotateFragment = RotateFragment.newInstance();
-        mAddTextFragment = AddTextFragment.newInstance();
-//        mPaintFragment = PaintFragment.newInstance();
-//        mBeautyFragment = BeautyFragment.newInstance();
+        Button buttonImage = findViewById(R.id.btn_image);
+        Button buttonText = findViewById(R.id.btn_text);
+        buttonImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mStickerView.setVisibility(View.VISIBLE);
+                mTextStickerView.setVisibility(View.GONE);
+                Bitmap bitmap =  getImageFromAssetsFile("stickers/type1/1.png");
+                mStickerView.addBitImage(bitmap);
+            }
+        });
 
-        bottomGallery.setAdapter(mBottomGalleryAdapter);
-
+        buttonText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mStickerView.setVisibility(View.GONE);
+                mTextStickerView.setVisibility(View.VISIBLE);
+                mTextStickerView.setText("哈哈哈哈/ndjksahdslls\ndsakjio3qikj");
+            }
+        });
 
         mainImage.setFlingListener(new ImageViewTouch.OnImageFlingListener() {
             @Override
             public void onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                //System.out.println(e1.getAction() + " " + e2.getAction() + " " + velocityX + "  " + velocityY);
                 if (velocityY > 1) {
                     closeInputMethod();
                 }
@@ -175,6 +186,19 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mRedoUndoController = new RedoUndoController(this, findViewById(R.id.redo_uodo_panel));
+    }
+
+    private Bitmap getImageFromAssetsFile(String fileName) {
+        Bitmap image = null;
+        AssetManager am = getResources().getAssets();
+        try {
+            InputStream is = am.open(fileName);
+            image = BitmapFactory.decodeStream(is);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
     /**
@@ -189,59 +213,29 @@ public class EditImageActivity extends BaseActivity {
     /**
      * @author panyi
      */
-    private final class BottomGalleryAdapter extends FragmentPagerAdapter {
-        public BottomGalleryAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int index) {
-            switch (index) {
-                case MainMenuFragment.INDEX:// 主菜单
-                    return mMainMenuFragment;
-                case StickerFragment.INDEX:// 贴图
-                    return mStickerFragment;
-                case AddTextFragment.INDEX://添加文字
-                    return mAddTextFragment;
-            }//end switch
-            return MainMenuFragment.newInstance();
-        }
-
-        @Override
-        public int getCount() {
-            return 8;
-        }
-    }// end inner class
-
-    /**
-     * 异步载入编辑图片
-     *
-     * @param filepath
-     */
-    public void loadImage(String filepath) {
-        if (mLoadImageTask != null) {
-            mLoadImageTask.cancel(true);
-        }
-        mLoadImageTask = new LoadImageTask();
-        mLoadImageTask.execute(filepath);
-    }
-
-    /**
-     * 导入文件图片任务
-     */
-    private final class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            return BitmapUtils.getSampledBitmap(params[0], imageWidth,
-                    imageHeight);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            changeMainBitmap(result, false);
-        }
-    }// end inner class
-
+//    private final class BottomGalleryAdapter extends FragmentPagerAdapter {
+//        public BottomGalleryAdapter(FragmentManager fm) {
+//            super(fm);
+//        }
+//
+//        @Override
+//        public Fragment getItem(int index) {
+//            switch (index) {
+//                case MainMenuFragment.INDEX:// 主菜单
+//                    return mMainMenuFragment;
+//                case StickerFragment.INDEX:// 贴图
+//                    return mStickerFragment;
+//                case AddTextFragment.INDEX://添加文字
+//                    return mAddTextFragment;
+//            }//end switch
+//            return MainMenuFragment.newInstance();
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return 8;
+//        }
+//    }// end inner class
     @Override
     public void onBackPressed() {
         switch (mode) {
@@ -344,9 +338,6 @@ public class EditImageActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mLoadImageTask != null) {
-            mLoadImageTask.cancel(true);
-        }
 
         if (mSaveImageTask != null) {
             mSaveImageTask.cancel(true);
@@ -371,14 +362,15 @@ public class EditImageActivity extends BaseActivity {
     }
 
     protected void onSaveTaskDone() {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(FILE_PATH, filePath);
-        returnIntent.putExtra(EXTRA_OUTPUT, saveFilePath);
-        returnIntent.putExtra(IMAGE_IS_EDIT, mOpTimes > 0);
-
-        FileUtil.ablumUpdate(this, saveFilePath);
-        setResult(RESULT_OK, returnIntent);
-        finish();
+        //tODO:
+//        Intent returnIntent = new Intent();
+//        returnIntent.putExtra(FILE_PATH, filePath);
+//        returnIntent.putExtra(EXTRA_OUTPUT, saveFilePath);
+//        returnIntent.putExtra(IMAGE_IS_EDIT, mOpTimes > 0);
+//
+//        FileUtil.ablumUpdate(this, saveFilePath);
+//        setResult(RESULT_OK, returnIntent);
+//        finish();
     }
 
     /**

@@ -25,6 +25,8 @@ import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
 import com.xinlan.imageeditlibrary.editimage.ui.ColorPicker;
 import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
 
+import java.util.Random;
+
 
 /**
  * 添加文本贴图
@@ -81,7 +83,14 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
 
         backToMenu.setOnClickListener(new BackToMenuClick());// 返回主菜单
         mColorPicker = new ColorPicker(getActivity(), 255, 0, 0);
-        mTextColorSelector.setOnClickListener(new SelectColorBtnClick());
+        mTextColorSelector.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Random random = new Random();
+                int  aaa =   random.nextInt(255);
+                changeTextColor(Color.rgb(aaa, aaa, aaa));
+            }
+        });
         mInputText.addTextChangedListener(this);
         mTextStickerView.setEditText(mInputText);
 
@@ -166,7 +175,8 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     public void backToMain() {
         hideInput();
         activity.mode = EditImageActivity.MODE_NONE;
-        activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
+        //TOOD:
+        //activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
         mTextStickerView.setVisibility(View.GONE);

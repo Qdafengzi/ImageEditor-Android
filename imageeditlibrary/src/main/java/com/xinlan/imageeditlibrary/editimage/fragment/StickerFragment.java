@@ -119,8 +119,7 @@ public class StickerFragment extends BaseEditFragment {
     @Override
     public void onShow() {
         activity.mode = EditImageActivity.MODE_STICKERS;
-        activity.mStickerFragment.getmStickerView().setVisibility(
-                View.VISIBLE);
+        activity.mStickerFragment.getmStickerView().setVisibility(View.VISIBLE);
         activity.bannerFlipper.showNext();
     }
 
@@ -250,7 +249,8 @@ public class StickerFragment extends BaseEditFragment {
     @Override
     public void backToMain() {
         activity.mode = EditImageActivity.MODE_NONE;
-        activity.bottomGallery.setCurrentItem(0);
+        //TODO:
+        //activity.bottomGallery.setCurrentItem(0);
         mStickerView.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
     }
